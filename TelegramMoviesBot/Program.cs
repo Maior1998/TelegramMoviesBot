@@ -6,7 +6,11 @@ namespace TelegramMoviesBot
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            MoviesDatabase.DatabaseContext db = new MoviesDatabase.DatabaseContext();
+            Console.WriteLine("Deleting database . . .");
+            db.Database.EnsureDeleted();
+            Console.WriteLine("Creating database . . .");
+            db.Database.EnsureCreated();
         }
     }
 }
