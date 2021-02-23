@@ -17,4 +17,8 @@
   <ItemGroup>
     <ProjectReference Include="..\MoviesDatabase\MoviesDatabase.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Model\" />
+    <Folder Include="Model\VideoDataProviders\" />
+  </ItemGroup>
 </Project>

@@ -3,8 +3,6 @@ namespace MoviesDatabase
 {
     public class DatabaseSettings
     {
-        public DatabaseSettings()
-        {
-        }
+        public string SettingsFilePath { get; set; }
     }
 }
