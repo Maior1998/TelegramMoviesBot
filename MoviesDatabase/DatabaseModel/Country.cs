@@ -22,7 +22,7 @@ namespace MoviesDatabase.DatabaseModel
         /// </summary>
         public string Name { get; set; }
 
-        public List<SettingCountry> UserSettings { get; set; }
+        public List<SettingCountry> Settings { get; set; }
             = new List<SettingCountry>();
 
         public List<VideoCountry> Videos { get; set; }
