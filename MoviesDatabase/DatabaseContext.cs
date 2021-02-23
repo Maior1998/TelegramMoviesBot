@@ -6,13 +6,27 @@ namespace MoviesDatabase
 {
     public class DatabaseContext : DbContext
     {
+        public DatabaseContext()
+        {
 
+        }
+        private static readonly string SettingsFileName = $"{nameof(SqlLiteSettings)}.json";
+        private static void TryLoadSettings()
+        {
+
+        }
+
+        public static SqlLiteSettings Settings { get; set; } = new SqlLiteSettings()
+        {
+            SettingsFilePath = "tgmovies.sqlite"
+        };
         public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<UserSettings> UsersSerttins { get; set; }
-        
+        public virtual DbSet<UserSettings> UsersSettings { get; set; }
+        public virtual DbSet<Video> Videos { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Filename=./tgmovies.sqlite");
+            optionsBuilder.UseSqlite($"Filename={Settings.SettingsFilePath}");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,7 +42,7 @@ namespace MoviesDatabase
                 .HasKey(x => new { x.GenreId, x.SettingsId });
             modelBuilder.Entity<SettingGenre>()
                 .HasOne(x => x.Genre)
-                .WithMany(x => x.SettingsGenres)
+                .WithMany(x => x.Settings)
                 .HasForeignKey(x => x.GenreId);
             modelBuilder.Entity<SettingGenre>()
                 .HasOne(x => x.Settings)
@@ -40,7 +54,7 @@ namespace MoviesDatabase
                 .HasKey(x => new { x.CountryId, x.SettingsId });
             modelBuilder.Entity<SettingCountry>()
                 .HasOne(x => x.Country)
-                .WithMany(x => x.UserSettings)
+                .WithMany(x => x.Settings)
                 .HasForeignKey(x => x.CountryId);
             modelBuilder.Entity<SettingCountry>()
                 .HasOne(x => x.Settings)
@@ -57,7 +71,7 @@ namespace MoviesDatabase
                 .HasForeignKey(x => x.CountryId);
             modelBuilder.Entity<VideoCountry>()
                 .HasOne(x => x.Video)
-                .WithMany(x => x.RealisedInCountries)
+                .WithMany(x => x.Countries)
                 .HasForeignKey(x => x.VideoId);
 
 
