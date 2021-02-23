@@ -25,9 +25,17 @@ namespace MoviesDatabase.DatabaseModel
         /// Определяет, включен ли бот у данного пользователя.
         /// </summary>
         public bool IsEnabled { get; set; }
-
+        /// <summary>
+        /// Список жанров, которые предпочитает данный пользователь.
+        /// </summary>
         public List<SettingGenre> Genres { get; set; }
+        /// <summary>
+        /// Список предпочитаемых стран выхода фильмов\сериалов пользователя.
+        /// </summary>
         public List<SettingCountry> Countries { get; set; }
+        /// <summary>
+        /// Предпочитаемый список типов выходящего видео.
+        /// </summary>
         public VideoType FilteringVideoType { get; set; }
 
 

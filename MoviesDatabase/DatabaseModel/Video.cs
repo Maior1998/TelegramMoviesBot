@@ -24,15 +24,26 @@ namespace MoviesDatabase.DatabaseModel
         /// <summary>
         /// Дата выхода видео.
         /// </summary>
-        public DateTime RealeseDate { get; set; }
+        public DateTime ReleaseDate { get; set; }
         /// <summary>
         /// Тип видео.
         /// </summary>
         public VideoType Type { get; set; }
         /// <summary>
-        /// Список стран, в которых это видео выйдет\вышло.
+        /// Список стран выхода этого видео.
         /// </summary>
-        public List<VideoCountry> RealisedInCountries { get; set; } = new List<VideoCountry>();
+        public List<VideoCountry> Countries { get; set; } = new List<VideoCountry>();
+
+        /// <summary>
+        /// Ссылка на трейлер к этому видео.
+        /// </summary>
+        public string TrailerUrl { get; set; }
+
+        /// <summary>
+        /// Обложка фильма\сериала.
+        /// </summary>
+        [NotMapped] public byte[] Image { get; set; }
+
         /// <summary>
         /// Список жанров этого видео.
         /// </summary>
