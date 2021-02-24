@@ -48,7 +48,7 @@ namespace TelegramMoviesBot.Model
         }
 
 
-        private static User[] CheckUsers(DatabaseContext db, Video video)
+        public static User[] CheckUsers(DatabaseContext db, Video video)
         {
             ParameterExpression param = Expression.Parameter(typeof(User), "x");
             Expression exp = Expression.Equal(
@@ -56,6 +56,7 @@ namespace TelegramMoviesBot.Model
         Expression.Property(param, nameof(User.Settings)), nameof(UserSettings.IsEnabled)), Expression.Constant(true));
             exp = GetGenresFilter(exp, video, param);
             exp = GetCountriesFilter(exp, video, param);
+            exp = getVideoTypeFilter(exp, video, param);
             return db.Users.Where(Expression.Lambda<Func<User, bool>>(exp, param)).ToArray();
         }
 
@@ -66,8 +67,13 @@ namespace TelegramMoviesBot.Model
             if (video.Genres == null || !video.Genres.Any())
                 return current;
             ulong[] genresIds = video.Genres.Select(x => x.GenreId).ToArray();
-            Expression aggregationExpression = getGenresCallAnyExpression(genresIds.First(), parameter);
-            foreach (ulong id in genresIds.Skip(1))
+            Expression aggregationExpression = Expression.Not(Expression.Call(
+                typeof(Enumerable),
+                "Any",
+                new[] { typeof(SettingGenre) },
+                Expression.Property(Expression.Property(parameter, nameof(User.Settings)), nameof(UserSettings.Genres))));
+
+            foreach (ulong id in genresIds)
             {
                 MethodCallExpression curCall = getGenresCallAnyExpression(id, parameter);
                 aggregationExpression = Expression.OrElse(aggregationExpression, curCall);
@@ -83,23 +89,37 @@ namespace TelegramMoviesBot.Model
                 typeof(Enumerable),
                 "Any",
                 new[] { typeof(SettingGenre) },
-                Expression.Property(Expression.Property(parameter,nameof(User.Settings)), nameof(UserSettings.Genres)),
+                Expression.Property(Expression.Property(parameter, nameof(User.Settings)), nameof(UserSettings.Genres)),
                 predicate);
             return body;
         }
 
         private static Expression getVideoTypeFilter(Expression current, Video video, ParameterExpression parameter)
         {
-            Expression<Func<User, bool>> exp = null;
+            Expression exp;
             //Отвратительная реализация от того, что пока что впадлу по другому сделать.
             if (video.Type == 0 || (video.Type.HasFlag(VideoType.Movie) && video.Type.HasFlag(VideoType.TvSeries)))
                 return current;
             if (video.Type.HasFlag(VideoType.Movie))
-                exp = user => (user.Settings.FilteringVideoType & VideoType.Movie) != 0;
+                exp = Expression.NotEqual(
+                    Expression.And(
+                        Expression.Convert(
+                        Expression.Property
+                        (Expression.Property(
+                            parameter, nameof(User.Settings)), nameof(UserSettings.FilteringVideoType)), typeof(int)),
+                        Expression.Constant((int)VideoType.Movie)), Expression.Constant(0));
             else
-                exp = user => (user.Settings.FilteringVideoType & VideoType.TvSeries) != 0;
+                exp = Expression.NotEqual(
+                    Expression.And(
+                        Expression.Convert(
+                        Expression.Property
+                        (Expression.Property(
+                            parameter, nameof(User.Settings)), nameof(UserSettings.FilteringVideoType)), typeof(int)),
+                        Expression.Constant((int)VideoType.TvSeries)), Expression.Constant(0));
             return Expression.AndAlso(current, exp);
         }
+
+
 
 
         private static Expression GetCountriesFilter(Expression current, Video video, ParameterExpression parameter)
@@ -108,8 +128,12 @@ namespace TelegramMoviesBot.Model
                 return current;
             ulong[] countriesIds = video.Countries.Select(x => x.CountryId).ToArray();
 
-            Expression aggregationExpression = getCountriesCallAnyExpression(countriesIds.First(), parameter);
-            foreach (ulong id in countriesIds.Skip(1))
+            Expression aggregationExpression = Expression.Not(Expression.Call(
+                typeof(Enumerable),
+                "Any",
+                new[] { typeof(SettingCountry) },
+                Expression.Property(Expression.Property(parameter, nameof(User.Settings)), nameof(UserSettings.Countries))));
+            foreach (ulong id in countriesIds)
             {
                 MethodCallExpression curCall = getCountriesCallAnyExpression(id, parameter);
                 aggregationExpression = Expression.OrElse(aggregationExpression, curCall);
@@ -131,7 +155,7 @@ namespace TelegramMoviesBot.Model
             return body;
         }
 
-        
+
 
         private static void FakeSendMessage(User user, Video video) { }
 

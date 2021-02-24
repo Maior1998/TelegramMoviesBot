@@ -16,6 +16,7 @@ namespace Tests.Model
             return new[] {
                 new Video()
                 {
+                    Type=VideoType.Movie,
                     Countries = new List<VideoCountry>()
                     {
                         new VideoCountry()
@@ -35,7 +36,7 @@ namespace Tests.Model
                     {
                         new VideoGenre()
                         {
-                            GenreId=2,
+                            GenreId=1,
                         },
                         new VideoGenre()
                         {
