@@ -2,6 +2,7 @@
 using System.Linq;
 using MoviesDatabase.DatabaseModel;
 using Microsoft.EntityFrameworkCore;
+using TelegramMoviesBot.Model.TelegramApiFunctions;
 
 namespace TelegramMoviesBot
 {
@@ -16,6 +17,8 @@ namespace TelegramMoviesBot
             Console.WriteLine("Creating database . . .");
             db.Database.EnsureCreated();
             User[] users = db.Users.ToArray();
+
+            TelegramApiFunctions.start();
             Console.WriteLine();
         }
     }

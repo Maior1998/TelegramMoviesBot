@@ -24,7 +24,7 @@ namespace MoviesDatabase.DatabaseModel
         /// <summary>
         /// Определяет, включен ли бот у данного пользователя.
         /// </summary>
-        public bool IsEnabled { get; set; }
+        public bool IsEnabled { get; set; } = false;
         /// <summary>
         /// Список жанров, которые предпочитает данный пользователь.
         /// </summary>

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
+using System.Timers;
 using MoviesDatabase;
 using MoviesDatabase.DatabaseModel;
 using MoviesDatabase.DatabaseModel.ManyToManyTables;
@@ -11,40 +13,62 @@ namespace TelegramMoviesBot.Model
     public class VideoProcessor
     {
         private IVideoDataProvider VideoProvider;
-
-        public VideoProcessor(IVideoDataProvider videoProvider)
+        public ushort UpdateIntervalInMinutes = 60 * 24;
+        public VideoProcessor(IVideoDataProvider videoProvider, ushort updateIntervalInMinutes=60*24)
         {
             VideoProvider = videoProvider;
+            timer = new Timer();
+            UpdateIntervalInMinutes = updateIntervalInMinutes;
+            timer.Interval = 1000 * 60 * UpdateIntervalInMinutes;
+            timer.AutoReset = true;
+            timer.Elapsed += PerformUpdate;
+
         }
 
+        Timer timer;
 
         public void Start()
         {
-            try
+            if (!timer.Enabled)
+                timer.Start();
+        }
+
+        public void Stop()
+        {
+            if(timer.Enabled)
+            timer.Stop();
+        }
+
+        private async void PerformUpdate(object sender, ElapsedEventArgs e)
+        {
+            await Task.Run(()=>
             {
-                Video[] newVideos = VideoProvider.GetNewVideos();
-                DatabaseContext databaseContext = new DatabaseContext();
-                string[] curNames = databaseContext.Videos.Select(x => x.Name).ToArray();
-                newVideos = newVideos.Where(x => !curNames.Contains(x.Name?.ToLower())).ToArray();
-                curNames = null;
-                foreach (Video video in newVideos)
+                try
                 {
-                    User[] usersWithNotifications = CheckUsers(databaseContext, video);
-                    foreach (User notifyUser in usersWithNotifications)
+                    Video[] newVideos = VideoProvider.GetNewVideos();
+                    DatabaseContext databaseContext = new DatabaseContext();
+                    string[] curNames = databaseContext.Videos.Select(x => x.Name).ToArray();
+                    newVideos = newVideos.Where(x => !curNames.Contains(x.Name?.ToLower())).ToArray();
+                    curNames = null;
+                    foreach (Video video in newVideos)
                     {
-                        FakeSendMessage(notifyUser, video);
+                        User[] usersWithNotifications = CheckUsers(databaseContext, video);
+                        foreach (User notifyUser in usersWithNotifications)
+                        {
+                            TelegramApiFunctions.TelegramApiFunctions.SendMessage(notifyUser, video);
+                        }
+                        databaseContext.Videos.Add(video);
                     }
-                    databaseContext.Videos.Add(video);
+                    databaseContext.SaveChanges();
+                    Video[] oldVideos = databaseContext.Videos.Where(x => x.ReleaseDate < DateTime.Today).ToArray();
+                    databaseContext.Videos.RemoveRange(oldVideos);
+                    databaseContext.SaveChanges();
                 }
-                databaseContext.SaveChanges();
-                Video[] oldVideos = databaseContext.Videos.Where(x => x.ReleaseDate < DateTime.Today).ToArray();
-                databaseContext.Videos.RemoveRange(oldVideos);
-                databaseContext.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error ocurred while updating a videos! {ex.Message}\n{ex.StackTrace}");
-            }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error ocurred while updating a videos! {ex.Message}\n{ex.StackTrace}");
+                }
+            });
         }
 
 
@@ -154,11 +178,6 @@ namespace TelegramMoviesBot.Model
                 predicate);
             return body;
         }
-
-
-
-        private static void FakeSendMessage(User user, Video video) { }
-
 
     }
 }

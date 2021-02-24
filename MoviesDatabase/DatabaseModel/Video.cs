@@ -21,6 +21,12 @@ namespace MoviesDatabase.DatabaseModel
         /// Заглавие видео.
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Описание к видео.
+        /// </summary>
+        public string Description { get; set; }
+
         /// <summary>
         /// Дата выхода видео.
         /// </summary>
