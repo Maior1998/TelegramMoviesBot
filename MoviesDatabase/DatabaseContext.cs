@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.IO;
+using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MoviesDatabase.DatabaseModel;
 using MoviesDatabase.DatabaseModel.ManyToManyTables;
 
@@ -6,12 +10,22 @@ namespace MoviesDatabase
 {
     public class DatabaseContext : DbContext
     {
-        public DatabaseContext()
+        public readonly ILoggerFactory MyLoggerFactory;
+        public DatabaseContext() : base()
         {
-
+            MyLoggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddDebug();
+            });
         }
         private static readonly string SettingsFileName = $"{nameof(SqlLiteSettings)}.json";
         private static void TryLoadSettings()
+        {
+            string settingsFileContent = File.ReadAllText(SettingsFileName);
+            
+        }
+
+        private static void SaveSettings()
         {
 
         }
@@ -20,13 +34,26 @@ namespace MoviesDatabase
         {
             SettingsFilePath = "tgmovies.sqlite"
         };
+
+
+
+
+
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserSettings> UsersSettings { get; set; }
         public virtual DbSet<Video> Videos { get; set; }
+        public virtual DbSet<Genre> Genres { get; set; }
+        public virtual DbSet<Country> Countries { get; set; }
+
+
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite($"Filename={Settings.SettingsFilePath}");
+            optionsBuilder
+                .UseSqlite($"Filename={Settings.SettingsFilePath}")
+                .UseLoggerFactory(MyLoggerFactory)
+                .EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

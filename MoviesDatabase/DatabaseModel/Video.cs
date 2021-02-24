@@ -9,7 +9,7 @@ namespace MoviesDatabase.DatabaseModel
     /// <summary>
     /// Представляет собой видео, будь то фильм или сериал.
     /// </summary>
-    [Table("Viedos")]
+    [Table("Videos")]
     public class Video
     {
         /// <summary>
