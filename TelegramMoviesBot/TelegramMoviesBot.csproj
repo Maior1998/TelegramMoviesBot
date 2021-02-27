@@ -17,8 +17,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MoviesDatabase\MoviesDatabase.csproj" />
+    <ProjectReference Include="..\StaticFuncs\StaticFuncs.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\TelegramApiFunctions\" />
+    <Folder Include="Model\TelegramApiFunctions\BotStages\" />
   </ItemGroup>
 </Project>

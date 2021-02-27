@@ -26,7 +26,7 @@ namespace Tests
             db.Database.EnsureCreated();
             User testUser = new User()
             {
-                ApiIdentifier="asdasd",
+                ApiIdentifier=325235,
                 Settings = new UserSettings()
                 {
                     IsEnabled=true,

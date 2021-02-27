@@ -16,9 +16,9 @@ namespace TelegramMoviesBot
             db.Database.EnsureDeleted();
             Console.WriteLine("Creating database . . .");
             db.Database.EnsureCreated();
-            User[] users = db.Users.ToArray();
+            
 
-            TelegramApiFunctions.start();
+            TelegramApiFunctions.Start();
             Console.WriteLine();
         }
     }
