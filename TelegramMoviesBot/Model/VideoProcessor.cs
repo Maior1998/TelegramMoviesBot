@@ -13,8 +13,8 @@ namespace TelegramMoviesBot.Model
     public class VideoProcessor
     {
         private IVideoDataProvider VideoProvider;
-        public ushort UpdateIntervalInMinutes = 60 * 24;
-        public VideoProcessor(IVideoDataProvider videoProvider, ushort updateIntervalInMinutes=60*24)
+        public ushort UpdateIntervalInMinutes;
+        public VideoProcessor(IVideoDataProvider videoProvider, ushort updateIntervalInMinutes = 60 * 24)
         {
             VideoProvider = videoProvider;
             timer = new Timer();
@@ -31,21 +31,24 @@ namespace TelegramMoviesBot.Model
         {
             if (!timer.Enabled)
                 timer.Start();
+#if DEBUG
+            PerformUpdate(null, null);
+#endif
         }
 
         public void Stop()
         {
-            if(timer.Enabled)
-            timer.Stop();
+            if (timer.Enabled)
+                timer.Stop();
         }
 
         private async void PerformUpdate(object sender, ElapsedEventArgs e)
         {
-            await Task.Run(()=>
+            await Task.Run(() =>
             {
                 try
                 {
-                    Video[] newVideos = VideoProvider.GetNewVideos();
+                    Video[] newVideos = VideoProvider.GetNewVideos().ToArray();
                     DatabaseContext databaseContext = new DatabaseContext();
                     string[] curNames = databaseContext.Videos.Select(x => x.Name).ToArray();
                     newVideos = newVideos.Where(x => !curNames.Contains(x.Name?.ToLower())).ToArray();

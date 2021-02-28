@@ -3,6 +3,9 @@ using System.Linq;
 using MoviesDatabase.DatabaseModel;
 using Microsoft.EntityFrameworkCore;
 using TelegramMoviesBot.Model.TelegramApiFunctions;
+using TelegramMoviesBot.Model;
+using TelegramMoviesBot.Model.VideoDataProviders;
+using System.Threading.Tasks;
 
 namespace TelegramMoviesBot
 {
@@ -16,9 +19,12 @@ namespace TelegramMoviesBot
             db.Database.EnsureDeleted();
             Console.WriteLine("Creating database . . .");
             db.Database.EnsureCreated();
-            
-
-            TelegramApiFunctions.Start();
+            Task.Run(()=>TelegramApiFunctions.Start());
+            VideoProcessor videoProcessor = new VideoProcessor(new MovieDbDataProvider());
+            videoProcessor.Start();
+            Console.WriteLine("Press any key to exit");
+            Console.ReadKey();
+            TelegramApiFunctions.Stop();
             Console.WriteLine();
         }
     }

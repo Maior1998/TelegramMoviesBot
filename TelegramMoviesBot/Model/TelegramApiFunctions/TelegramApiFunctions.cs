@@ -38,21 +38,23 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions
             CurrentStage.StageChangingNeeded += ChangeStage;
         }
 
+        public static void Stop()
+        {
+            botClient.StopReceiving();
+        }
 
         public static void Start()
         {
-            apiKey = File.ReadAllText("api.txt");
+            apiKey = File.ReadAllText("api_telegram.txt");
             botClient = new TelegramBotClient(apiKey);
             ChangeStage(new MainMenuBotStage(botClient));
             botClient.StartReceiving();
-            Console.WriteLine("Press any key to exit");
-            Console.ReadKey();
-            botClient.StopReceiving();
+            
         }
 
         public static void SendMessage(User user, Video video)
         {
-            string message = $"Caption: {video.Name}\nDescription: {video.Description}\nRelease Date : {video.ReleaseDate.ToShortDateString()}";
+            string message = $"<b>Caption</b>: {video.Name}\n<b>Description</b>: {video.Description}\nRelease Date : {video.ReleaseDate.ToShortDateString()}";
             SendMessage(user, message);
         }
 
