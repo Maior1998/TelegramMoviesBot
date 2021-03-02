@@ -24,4 +24,7 @@ jobs:
           dotnet restore TelegramMoviesBot.csproj
       - name: build project
         run: dotnet build TelegramMoviesBot.csproj --configuration Release --no-restore
-
+      - name: build project
+        run: |
+            cd /
+            ls
