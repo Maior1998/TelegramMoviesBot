@@ -22,6 +22,4 @@ jobs:
       # Runs a single command using the runners shell
       - name: Try to build project
         run: |
-          xbuild TelegramMoviesBot.sln
-          cd TelegramMoviesBot
-          xbuild TelegramMoviesBot.csproj
+          ls
