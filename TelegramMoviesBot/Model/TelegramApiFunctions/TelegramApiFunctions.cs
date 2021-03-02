@@ -6,6 +6,7 @@ using MoviesDatabase;
 using MoviesDatabase.DatabaseModel;
 using Telegram.Bot;
 using Telegram.Bot.Args;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramMoviesBot.Model.TelegramApiFunctions.BotStages;
 
@@ -53,7 +54,7 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions
         public static void SendMessage(User user, Video video)
         {
             string message = $"<b>Caption</b>: {video.Name}\n<b>Description</b>: {video.Description}\nRelease Date : {video.ReleaseDate.ToShortDateString()}";
-            SendMessage(user, message);
+            botClient.SendTextMessageAsync(chatId:user.ApiIdentifier, text:message, parseMode: ParseMode.Html);
         }
 
         public static void SendMessage(User user, string message)

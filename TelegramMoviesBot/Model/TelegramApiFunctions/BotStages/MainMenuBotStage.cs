@@ -194,7 +194,16 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
             {
                 user.Settings.IsEnabled = newStatus;
                 db.SaveChanges();
-                await botClient.SendTextMessageAsync(chatId: user.ApiIdentifier, text: $"MoviesBot is now {botStatus} for you.");
+                string picUrl = null;
+                if (user.Settings.IsEnabled)
+                {
+                    picUrl = "https://i.kym-cdn.com/entries/icons/original/000/034/581/Untitled-5.png";
+                }
+                else
+                {
+                    picUrl = "https://i.redd.it/jyfakluns6g51.jpg";
+                }
+                await botClient.SendPhotoAsync(chatId: user.ApiIdentifier, caption: $"MoviesBot is now {botStatus} for you.", photo: picUrl);
             }
         }
 
