@@ -22,6 +22,6 @@ jobs:
         run: |
           cd TelegramMoviesBot
           dotnet restore TelegramMoviesBot.csproj
-    #  - name: build project
-    #   run: dotnet build --configuration Release --no-restore
+      - name: build project
+        run: dotnet build TelegramMoviesBot.csproj --configuration Release --no-restore
 
