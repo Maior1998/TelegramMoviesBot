@@ -24,10 +24,21 @@ namespace MoviesDatabase.DatabaseModel
         /// <summary>
         /// Определяет, включен ли бот у данного пользователя.
         /// </summary>
-        public bool IsEnabled { get; set; }
+        public bool IsEnabled { get; set; } = false;
+        /// <summary>
+        /// Список жанров, которые предпочитает данный пользователь.
+        /// </summary>
+        public List<SettingGenre> MovieGenres { get; set; } = new List<SettingGenre>();
 
-        public List<SettingGenre> Genres { get; set; }
-        public List<SettingCountry> Countries { get; set; }
+
+
+        /// <summary>
+        /// Список предпочитаемых стран выхода фильмов\сериалов пользователя.
+        /// </summary>
+        public List<SettingCountry> Countries { get; set; } = new List<SettingCountry>();
+        /// <summary>
+        /// Предпочитаемый список типов выходящего видео.
+        /// </summary>
         public VideoType FilteringVideoType { get; set; }
 
 
