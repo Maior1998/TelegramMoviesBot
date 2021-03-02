@@ -28,7 +28,10 @@ namespace MoviesDatabase.DatabaseModel
         /// <summary>
         /// Список жанров, которые предпочитает данный пользователь.
         /// </summary>
-        public List<SettingGenre> Genres { get; set; } = new List<SettingGenre>();
+        public List<SettingGenre> MovieGenres { get; set; } = new List<SettingGenre>();
+
+
+
         /// <summary>
         /// Список предпочитаемых стран выхода фильмов\сериалов пользователя.
         /// </summary>

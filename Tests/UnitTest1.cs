@@ -31,7 +31,7 @@ namespace Tests
                 {
                     IsEnabled=true,
                     FilteringVideoType=VideoType.Movie,
-                    Genres = new List<SettingGenre>()
+                    MovieGenres = new List<SettingGenre>()
                     {
                        new SettingGenre()
                        {

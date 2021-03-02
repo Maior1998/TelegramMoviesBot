@@ -11,6 +11,7 @@ namespace MoviesDatabase.DatabaseModel
     {
         [Key] public ulong Id { get; set; }
         public string Name { get; set; }
+        public VideoType Type { get; set; }
         public List<SettingGenre> Settings { get; set; } = new List<SettingGenre>();
         public List<VideoGenre> Videos { get; set; }
             = new List<VideoGenre>();

@@ -73,7 +73,7 @@ namespace MoviesDatabase
                 .HasForeignKey(x => x.GenreId);
             modelBuilder.Entity<SettingGenre>()
                 .HasOne(x => x.Settings)
-                .WithMany(x => x.Genres)
+                .WithMany(x => x.MovieGenres)
                 .HasForeignKey(x => x.SettingsId);
 
             //Settings - = > SettingCountry < = - Country

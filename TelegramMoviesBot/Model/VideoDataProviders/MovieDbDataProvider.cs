@@ -19,11 +19,10 @@ namespace TelegramMoviesBot.Model.VideoDataProviders
 
         public Video[] GetNewVideos()
         {
-            string apiKey = File.ReadAllText("api_moviedb.txt");
             int page = 1;
-            string configJson = GetUrl($"https://api.themoviedb.org/3/configuration?api_key={apiKey}");
+            string configJson = GetUrl($"https://api.themoviedb.org/3/configuration?api_key={BotSettings.MovieDbApiKey}");
             config = JsonConvert.DeserializeObject<MovieDbConfigEntry>(configJson);
-            string url = $"https://api.themoviedb.org/3/discover/movie?api_key={apiKey}&language=ru-RU&sort_by=release_date.asc&include_adult=true&include_video=false&page={page}&release_date.gte={DateTime.Today:yyyy-MM-dd}";
+            string url = $"https://api.themoviedb.org/3/discover/movie?api_key={BotSettings.MovieDbApiKey}&language=ru-RU&sort_by=release_date.asc&include_adult=true&include_video=false&page={page}&release_date.gte={DateTime.Today:yyyy-MM-dd}";
             Console.WriteLine("Downloading configuration");
             List<Video> videos = new List<Video>();
             string firstPage = GetUrl(url);
@@ -32,10 +31,8 @@ namespace TelegramMoviesBot.Model.VideoDataProviders
             {
                 Thread.Sleep(500);
                 Console.WriteLine($"Downloading page {page} from {movieDbPageEntry.total_pages}");
-                url = $"https://api.themoviedb.org/3/discover/movie?api_key={apiKey}&language=ru-RU&sort_by=release_date.asc&include_adult=true&include_video=false&page={page}&release_date.gte={DateTime.Today:yyyy-MM-dd}";
+                url = $"https://api.themoviedb.org/3/discover/movie?api_key={BotSettings.MovieDbApiKey}&language=ru-RU&sort_by=release_date.asc&include_adult=true&include_video=false&page={page}&release_date.gte={DateTime.Today:yyyy-MM-dd}";
                 movieDbPageEntry = JsonConvert.DeserializeObject<MovieDbPageEntry>(GetUrl(url));
-                if (movieDbPageEntry.results == null)
-                    Console.WriteLine();
                 videos.AddRange(movieDbPageEntry.results.Select(x => ConvertToVideo(x)).Where(x => x.ReleaseDate.Date >= DateTime.Today));
             }
             return videos.ToArray();
@@ -92,7 +89,6 @@ namespace TelegramMoviesBot.Model.VideoDataProviders
                result.Image= GetImage(source.poster_path);
             return result;
         }
-
 
         private class MovieDbVideoEntry
         {

@@ -27,7 +27,7 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
             DatabaseContext db = new DatabaseContext();
             User user = db.Users
                 .Include(x => x.Settings)
-                .ThenInclude(x => x.Genres)
+                .ThenInclude(x => x.MovieGenres)
                 .ThenInclude(x => x.Genre)
                 .Include(x => x.Settings)
                 .ThenInclude(x => x.Countries)
@@ -91,9 +91,9 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
                         string videoTypeFilterValue = (int)videoType == 0
                             ? "all"
                             : StaticFuncs.StaticFuncs.GetEnumDescription(videoType);
-                        string genresFilterValue = !user.Settings.Genres.Any()
+                        string genresFilterValue = !user.Settings.MovieGenres.Any()
                             ? "all"
-                            : $" only {string.Join(", ", user.Settings.Genres.Select(x => x.Genre.Name))}";
+                            : $" only {string.Join(", ", user.Settings.MovieGenres.Select(x => x.Genre.Name))}";
                         string countriesFilterValue = !user.Settings.Countries.Any()
                             ? "all"
                             : $"only {string.Join(", ", user.Settings.Countries.Select(x => x.Country.Name))}";
@@ -154,7 +154,7 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
                         await botClient.SendTextMessageAsync(chatId: userId, text: "Ok, you countries withlist is now empty!");
                         break;
                     case "/cleargenres":
-                        user.Settings.Genres.Clear();
+                        user.Settings.MovieGenres.Clear();
                         db.SaveChanges();
                         await botClient.SendTextMessageAsync(chatId: userId, text: "Ok, you genres withlist is now empty!");
                         break;

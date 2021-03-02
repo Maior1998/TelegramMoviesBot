@@ -14,7 +14,6 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions
     public class TelegramApiFunctions
     {
         
-        private static string apiKey;
         static ITelegramBotClient botClient;
         private static BotStage CurrentStage;
 
@@ -45,8 +44,7 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions
 
         public static void Start()
         {
-            apiKey = File.ReadAllText("api_telegram.txt");
-            botClient = new TelegramBotClient(apiKey);
+            botClient = new TelegramBotClient(BotSettings.TelegramApiKey);
             ChangeStage(new MainMenuBotStage(botClient));
             botClient.StartReceiving();
             

@@ -31,15 +31,15 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
         {
             User user = db.Users
                     .Include(x => x.Settings)
-                    .ThenInclude(x => x.Genres)
+                    .ThenInclude(x => x.MovieGenres)
                     .ThenInclude(x => x.Genre)
                     .Single(x => x.ApiIdentifier == userId);
-            if (user.Settings.Genres.Any(x => x.Genre.Name.ToLower() == genre.Name.ToLower()))
+            if (user.Settings.MovieGenres.Any(x => x.Genre.Name.ToLower() == genre.Name.ToLower()))
             {
                 await botClient.SendTextMessageAsync(chatId: userId, text: "You already have this genre in your wishlist!");
                 OnStageChangingNeeded(new MainMenuBotStage(botClient));
             }
-            user.Settings.Genres.Add(new SettingGenre() { Genre = genre });
+            user.Settings.MovieGenres.Add(new SettingGenre() { Genre = genre });
             db.SaveChanges();
             await botClient.SendTextMessageAsync(chatId: userId, text: $"Genre {genre.Name} was successfully added to your wishlist!");
             OnStageChangingNeeded(new MainMenuBotStage(botClient));
