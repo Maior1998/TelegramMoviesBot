@@ -22,7 +22,6 @@ jobs:
       # Runs a single command using the runners shell
       - name: Try to build project
         run: |
-          apt-get install mono-complete
           xbuild TelegramMoviesBot.sln
           cd TelegramMoviesBot
           xbuild TelegramMoviesBot.csproj
