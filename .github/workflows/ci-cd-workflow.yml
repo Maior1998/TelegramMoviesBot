@@ -26,5 +26,9 @@ jobs:
         run: |
           cd TelegramMoviesBot
           dotnet build TelegramMoviesBot.csproj --configuration Release --no-restore
-
-
+      - name: Trying to find exe file
+        run: |
+          ls
+          cd bin/Debug/net5.0/
+          ls
+          
