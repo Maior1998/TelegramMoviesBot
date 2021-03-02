@@ -18,7 +18,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Install dependencies
-        run: dotnet restore
-      - name: build project
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet restore ./TelegramMoviesBot/TelegramMoviesBot.csproj
+    #  - name: build project
+    #   run: dotnet build --configuration Release --no-restore
 
