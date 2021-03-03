@@ -26,7 +26,5 @@ jobs:
         run: |
           cd TelegramMoviesBot
           dotnet build TelegramMoviesBot.csproj --configuration Release --no-restore
-      - name: Trying to find exe file
-        run: |
-         dotnet /home/runner/work/TelegramMoviesBot/TelegramMoviesBot/TelegramMoviesBot/bin/Release/net5.0/TelegramMoviesBot.dll
-          
+      - name: Run tests
+        run: dotnet ./Tests/Tests.csproj
