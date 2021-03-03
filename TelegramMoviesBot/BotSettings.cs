@@ -14,10 +14,6 @@ namespace TelegramMoviesBot
         }
 
 
-        /// <summary>
-        /// Интервал обновления фильмов (в минутах).
-        /// </summary>
-        public static uint UpdateInterval { get; set; } = 60 * 24;
         private static string telegramApiKey;
         public static string TelegramApiKey => telegramApiKey ??= Environment.GetEnvironmentVariable("TELEGRAM_API_KEY");
         private static string movieDbApiKey;
