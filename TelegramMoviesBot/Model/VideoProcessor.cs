@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using MoviesDatabase;
@@ -17,32 +18,28 @@ namespace TelegramMoviesBot.Model
         public VideoProcessor(IVideoDataProvider videoProvider, ushort updateIntervalInMinutes = 60 * 24)
         {
             VideoProvider = videoProvider;
-            timer = new Timer();
-            UpdateIntervalInMinutes = updateIntervalInMinutes;
-            timer.Interval = 1000 * 60 * UpdateIntervalInMinutes;
-            timer.AutoReset = true;
-            timer.Elapsed += PerformUpdate;
+            
 
         }
 
-        Timer timer;
+        
 
         public void Start()
         {
-            if (!timer.Enabled)
-                timer.Start();
+            while (true)
+            {
+                Thread.Sleep(60 * UpdateIntervalInMinutes);
+                PerformUpdate();
+            }
+
 #if DEBUG
             //PerformUpdate(null, null);
 #endif
         }
 
-        public void Stop()
-        {
-            if (timer.Enabled)
-                timer.Stop();
-        }
+        
 
-        private async void PerformUpdate(object sender, ElapsedEventArgs e)
+        private async void PerformUpdate()
         {
             await Task.Run(() =>
             {
@@ -79,7 +76,7 @@ namespace TelegramMoviesBot.Model
             });
         }
 
-        
+
 
         public static User[] CheckUsers(DatabaseContext db, Video video)
         {
@@ -88,7 +85,7 @@ namespace TelegramMoviesBot.Model
             Expression.Property(
                 Expression.Property(param, nameof(User.Settings)), nameof(UserSettings.IsEnabled)), Expression.Constant(true));
             exp = GetGenresFilter(exp, video, param);
-            exp = GetCountriesFilter(exp, video, param);
+            //exp = GetCountriesFilter(exp, video, param);
             exp = getVideoTypeFilter(exp, video, param);
             return db.Users.Where(Expression.Lambda<Func<User, bool>>(exp, param)).ToArray();
         }

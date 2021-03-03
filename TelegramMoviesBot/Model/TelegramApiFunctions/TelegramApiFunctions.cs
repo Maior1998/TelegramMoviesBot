@@ -48,7 +48,6 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions
             botClient = new TelegramBotClient(BotSettings.TelegramApiKey);
             ChangeStage(new MainMenuBotStage(botClient));
             botClient.StartReceiving();
-            
         }
 
         public static void SendMessage(User user, Video video)

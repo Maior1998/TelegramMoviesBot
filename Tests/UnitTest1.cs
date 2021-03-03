@@ -19,13 +19,16 @@ namespace Tests
         }
 
         [Test]
-        public void Test1()
+        public void TestGenre()
         {
             DatabaseContext db = new DatabaseContext();
             db.Database.EnsureDeleted();
             db.Database.EnsureCreated();
+            db.Genres.AddRange(Functions.Genres);
+            db.SaveChanges();
             User testUser = new User()
             {
+                Id=7,
                 ApiIdentifier=325235,
                 Settings = new UserSettings()
                 {
@@ -35,20 +38,46 @@ namespace Tests
                     {
                        new SettingGenre()
                        {
-                           Genre = new Genre()
-                           {
-
-                           }
+                           GenreId = 6
                        }
                     }
                 }
             };
+            Video video = new Video()
+            {
+                Type = VideoType.Movie,
+                Countries = new List<VideoCountry>()
+                {
+                    new VideoCountry()
+                    {
+                        CountryId = 1
+                    },
+                    new VideoCountry()
+                    {
+                        CountryId = 4
+                    },
+                    new VideoCountry()
+                    {
+                        CountryId = 10
+                    }
+                },
+                Genres = new List<VideoGenre>()
+                {
+                    new VideoGenre()
+                    {
+                        GenreId = 1,
+                    },
+                    new VideoGenre()
+                    {
+                        GenreId = 6,
+                    },
+                }
+            };
             db.Users.Add(testUser);
             db.SaveChanges();
-            Genre[] allgenres = db.Genres.ToArray();
-            VideoProcessor videoProcessor = new VideoProcessor(new TestVideoProvider());
-            videoProcessor.Start();
-            Assert.Pass();
+            User[] users = VideoProcessor.CheckUsers(db, video);
+            bool isContains = users.Any(x => x.Id == testUser.Id);
+            Assert.AreEqual(isContains,true);
         }
     }
 }
