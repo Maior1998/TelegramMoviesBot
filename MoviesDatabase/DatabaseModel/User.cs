@@ -20,11 +20,12 @@ namespace MoviesDatabase.DatabaseModel
         /// Идентификатор пользователя в API Telegram.
         /// </summary>
         [Required][Index]
-        public string ApiIdentifier { get; set; }
+        public long ApiIdentifier { get; set; }
         /// <summary>
         /// Настройки приложения данного пользователя.
         /// </summary>
-        [Required][ForeignKey("SettingsId")]
-        public UserSettings Settings { get; set; }
+        [Required]
+        [ForeignKey("SettingsId")]
+        public UserSettings Settings { get; set; } = new UserSettings();
     }
 }

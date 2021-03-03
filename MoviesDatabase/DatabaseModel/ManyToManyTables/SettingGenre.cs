@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace MoviesDatabase.DatabaseModel.ManyToManyTables
 {
     /// <summary>
-    /// Представляет собой смежную таблицу между настройками и жанрами для реализации отношения многое ко многим.
+    /// Представляет собой смежную таблицу между настройками и жанрами фильмов для реализации отношения многое ко многим.
     /// </summary>
     [Table("SettingsGenres")]
     public class SettingGenre

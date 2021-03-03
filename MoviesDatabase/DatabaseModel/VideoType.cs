@@ -4,15 +4,16 @@ namespace MoviesDatabase.DatabaseModel
     /// <summary>
     /// Представляет перечисление возможных типов видео в базах данных.
     /// </summary>
+    [Flags]
     public enum VideoType
     {
         /// <summary>
         /// Фильм.
         /// </summary>
-        Movie,
+        Movie=1,
         /// <summary>
         /// Сериал.
         /// </summary>
-        TvSeries
+        TvSeries=2
     }
 }
