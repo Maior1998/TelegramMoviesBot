@@ -14,7 +14,7 @@ namespace TelegramMoviesBot
     {
         static void Main(string[] args)
         {
-            MoviesDatabase.DatabaseContext db = new MoviesDatabase.DatabaseContext();
+            DatabaseContext db = new DatabaseContext();
 
             Console.WriteLine("Deleting database . . .");
             db.Database.EnsureDeleted();
@@ -25,13 +25,11 @@ namespace TelegramMoviesBot
             db.SaveChanges();
 
 
-            Task.Run(()=>TelegramApiFunctions.Start());
+            TelegramApiFunctions.Start();
             VideoProcessor videoProcessor = new VideoProcessor(new MovieDbDataProvider());
-            videoProcessor.Start();
-            Console.WriteLine("Press any key to exit");
-            Console.ReadKey();
+            Task videoProcessingTask = Task.Run(() => videoProcessor.Start());
+            videoProcessingTask.Wait();
             TelegramApiFunctions.Stop();
-            Console.WriteLine();
         }
     }
 }
