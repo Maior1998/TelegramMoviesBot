@@ -27,4 +27,4 @@ jobs:
           cd TelegramMoviesBot
           dotnet build TelegramMoviesBot.csproj --configuration Release --no-restore
       - name: Run tests
-        run: dotnet ./Tests/Tests.csproj
+        run: dotnet test
