@@ -85,7 +85,7 @@ namespace TelegramMoviesBot.Model
             Expression.Property(
                 Expression.Property(param, nameof(User.Settings)), nameof(UserSettings.IsEnabled)), Expression.Constant(true));
             exp = GetGenresFilter(exp, video, param);
-            exp = GetCountriesFilter(exp, video, param);
+            //exp = GetCountriesFilter(exp, video, param);
             exp = getVideoTypeFilter(exp, video, param);
             return db.Users.Where(Expression.Lambda<Func<User, bool>>(exp, param)).ToArray();
         }
