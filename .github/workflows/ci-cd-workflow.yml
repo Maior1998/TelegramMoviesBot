@@ -33,4 +33,4 @@ jobs:
       #  run: |
       #      dotnet run /TelegramMoviesBot/TelegramMoviesBot.csproj
       #      docker build docker.pkg.github.com/maior1998/telegrammoviesbot/telegrammoviesbot:1.0
-            docker push docker.pkg.github.com/maior1998/telegrammoviesbot/telegrammoviesbot:1.0
+      #      docker push docker.pkg.github.com/maior1998/telegrammoviesbot/telegrammoviesbot:1.0
