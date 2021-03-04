@@ -4,9 +4,11 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+
 using MoviesDatabase;
 using MoviesDatabase.DatabaseModel;
 using MoviesDatabase.DatabaseModel.ManyToManyTables;
+
 using TelegramMoviesBot.Model.VideoDataProviders;
 
 namespace TelegramMoviesBot.Model
@@ -18,26 +20,27 @@ namespace TelegramMoviesBot.Model
         public VideoProcessor(IVideoDataProvider videoProvider, ushort updateIntervalInMinutes = 60 * 24)
         {
             VideoProvider = videoProvider;
-            
+            UpdateIntervalInMinutes = updateIntervalInMinutes;
 
         }
 
-        
+
 
         public void Start()
         {
+#if DEBUG
+            PerformUpdate();
+#endif
             while (true)
             {
-                Thread.Sleep(60 * UpdateIntervalInMinutes);
+                Thread.Sleep(1000 * 60 * UpdateIntervalInMinutes);
                 PerformUpdate();
             }
 
-#if DEBUG
-            //PerformUpdate(null, null);
-#endif
+
         }
 
-        
+
 
         private async void PerformUpdate()
         {
@@ -45,11 +48,6 @@ namespace TelegramMoviesBot.Model
             {
                 try
                 {
-
-
-
-
-
                     Video[] newVideos = VideoProvider.GetNewVideos().ToArray();
                     DatabaseContext databaseContext = new DatabaseContext();
                     string[] curNames = databaseContext.Videos.Select(x => x.Name).ToArray();
@@ -63,8 +61,8 @@ namespace TelegramMoviesBot.Model
                             TelegramApiFunctions.TelegramApiFunctions.SendMessage(notifyUser, video);
                         }
                         databaseContext.Videos.Add(video);
+                        databaseContext.SaveChanges();
                     }
-                    databaseContext.SaveChanges();
                     Video[] oldVideos = databaseContext.Videos.Where(x => x.ReleaseDate < DateTime.Today).ToArray();
                     databaseContext.Videos.RemoveRange(oldVideos);
                     databaseContext.SaveChanges();
@@ -86,7 +84,7 @@ namespace TelegramMoviesBot.Model
                 Expression.Property(param, nameof(User.Settings)), nameof(UserSettings.IsEnabled)), Expression.Constant(true));
             exp = GetGenresFilter(exp, video, param);
             //exp = GetCountriesFilter(exp, video, param);
-            exp = getVideoTypeFilter(exp, video, param);
+            exp = GetVideoTypeFilter(exp, video, param);
             return db.Users.Where(Expression.Lambda<Func<User, bool>>(exp, param)).ToArray();
         }
 
@@ -127,7 +125,7 @@ namespace TelegramMoviesBot.Model
             return body;
         }
 
-        private static Expression getVideoTypeFilter(Expression current, Video video, ParameterExpression parameter)
+        private static Expression GetVideoTypeFilter(Expression current, Video video, ParameterExpression parameter)
         {
             Expression exp;
             //Отвратительная реализация от того, что пока что впадлу по другому сделать.

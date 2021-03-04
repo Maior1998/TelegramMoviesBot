@@ -5,8 +5,10 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Drawing;
+using MoviesDatabase;
 using MoviesDatabase.DatabaseModel;
 using Newtonsoft.Json;
+using MoviesDatabase.DatabaseModel.ManyToManyTables;
 
 namespace TelegramMoviesBot.Model.VideoDataProviders
 {
@@ -19,11 +21,20 @@ namespace TelegramMoviesBot.Model.VideoDataProviders
 
         public Video[] GetNewVideos()
         {
+            string genresJson = GetUrl($"https://api.themoviedb.org/3/genre/movie/list?api_key={BotSettings.MovieDbApiKey}&language=ru-RU");
+            MovieDbGenresVideos genresParsed = JsonConvert.DeserializeObject<MovieDbGenresVideos>(genresJson);
+            movieDbMovieGenres = genresParsed.genres.ToDictionary(x => x.id, x => x.name);
+            genresJson = GetUrl($"https://api.themoviedb.org/3/genre/tv/list?api_key={BotSettings.MovieDbApiKey}&language=ru-RU");
+            genresParsed = JsonConvert.DeserializeObject<MovieDbGenresVideos>(genresJson);
+            movieDbTvSeriesGenres = genresParsed.genres.ToDictionary(x => x.id, x => x.name);
+
+
+
             int page = 1;
+            Console.WriteLine("Downloading configuration");
             string configJson = GetUrl($"https://api.themoviedb.org/3/configuration?api_key={BotSettings.MovieDbApiKey}");
             config = JsonConvert.DeserializeObject<MovieDbConfigEntry>(configJson);
             string url = $"https://api.themoviedb.org/3/discover/movie?api_key={BotSettings.MovieDbApiKey}&language=ru-RU&sort_by=release_date.asc&include_adult=true&include_video=false&page={page}&release_date.gte={DateTime.Today:yyyy-MM-dd}";
-            Console.WriteLine("Downloading configuration");
             List<Video> videos = new List<Video>();
             string firstPage = GetUrl(url);
             MovieDbPageEntry movieDbPageEntry = JsonConvert.DeserializeObject<MovieDbPageEntry>(firstPage);
@@ -33,10 +44,22 @@ namespace TelegramMoviesBot.Model.VideoDataProviders
                 Console.WriteLine($"Downloading page {page} from {movieDbPageEntry.total_pages}");
                 url = $"https://api.themoviedb.org/3/discover/movie?api_key={BotSettings.MovieDbApiKey}&language=ru-RU&sort_by=release_date.asc&include_adult=true&include_video=false&page={page}&release_date.gte={DateTime.Today:yyyy-MM-dd}";
                 movieDbPageEntry = JsonConvert.DeserializeObject<MovieDbPageEntry>(GetUrl(url));
-                videos.AddRange(movieDbPageEntry.results.Select(x => ConvertToVideo(x)).Where(x => x.ReleaseDate.Date >= DateTime.Today));
+                videos.AddRange(movieDbPageEntry.results.Select(x => ConvertToVideo(x, VideoType.Movie)).Where(x => x.ReleaseDate.Date >= DateTime.Today));
             }
             return videos.ToArray();
         }
+
+        public class MovieDbGenresVideos
+        {
+            public MovieDbGenresVideosEntry[] genres { get; set; }
+        }
+
+        public class MovieDbGenresVideosEntry
+        {
+            public int id { get; set; }
+            public string name { get; set; }
+        }
+
 
         private static string GetUrl(string url)
         {
@@ -61,32 +84,40 @@ namespace TelegramMoviesBot.Model.VideoDataProviders
             }
             return response;
         }
-        private static byte[] GetImage(string poster_path)
+        private static string GetImage(string poster_path)
         {
             string url = $"{config.images.base_url}{config.images.poster_sizes[config.images.poster_sizes.Length / 2]}{poster_path}";
-
-            using (WebClient webClient = new WebClient())
-            {
-                byte[] data = webClient.DownloadData(url);
-                return data;
-            }
+            return url;
         }
 
-        private static Video ConvertToVideo(MovieDbVideoEntry source)
-        {
-            Video result = new Video();
+        private static Dictionary<int, string> movieDbMovieGenres = new Dictionary<int, string>();
+        private static Dictionary<int, string> movieDbTvSeriesGenres = new Dictionary<int, string>();
 
-            result.Name = source.title;
-            result.Description = source.overview;
-            int year, month, day;
+        private static Video ConvertToVideo(MovieDbVideoEntry source, VideoType type)
+        {
+            Video result = new Video
+            {
+                Name = source.title,
+                Description = source.overview
+            };
+            DatabaseContext db = new DatabaseContext();
+            foreach (int genreId in source.genre_ids)
+            {
+                Genre genre = null;
+                if (type == VideoType.Movie)
+                    genre = db.Genres.Where(x => x.Type == type).FirstOrDefault(x => x.Name.ToLower() == movieDbMovieGenres[genreId]);
+                else
+                    genre = db.Genres.Where(x => x.Type == type).FirstOrDefault(x => x.Name.ToLower() == movieDbTvSeriesGenres[genreId]);
+                if (genre == null) continue;
+                result.Genres.Add(new VideoGenre() { Genre = genre, GenreId = genre.Id });
+            }
             string[] dateParts = source.release_date.Split("-");
-            year = int.Parse(dateParts[0]);
-            month = int.Parse(dateParts[1]);
-            day = int.Parse(dateParts[2]);
+            int year = int.Parse(dateParts[0]);
+            int month = int.Parse(dateParts[1]);
+            int day = int.Parse(dateParts[2]);
             result.ReleaseDate = new DateTime(year, month, day);
-            //TODO: скачать обложку
             if (source.poster_path != null)
-               result.Image= GetImage(source.poster_path);
+                result.ImageUrl = GetImage(source.poster_path);
             return result;
         }
 

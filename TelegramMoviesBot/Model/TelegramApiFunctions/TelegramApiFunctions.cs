@@ -53,7 +53,10 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions
         public static void SendMessage(User user, Video video)
         {
             string message = $"<b>Caption</b>: {video.Name}\n<b>Description</b>: {video.Description}\nRelease Date : {video.ReleaseDate.ToShortDateString()}";
-            botClient.SendTextMessageAsync(chatId:user.ApiIdentifier, text:message, parseMode: ParseMode.Html);
+            if (string.IsNullOrWhiteSpace(video.ImageUrl))
+                botClient.SendTextMessageAsync(chatId: user.ApiIdentifier, text: message, parseMode: ParseMode.Html);
+            else
+                botClient.SendPhotoAsync(chatId: user.ApiIdentifier, photo: video.ImageUrl, caption: message, parseMode: ParseMode.Html);
         }
 
         public static void SendMessage(User user, string message)

@@ -48,7 +48,7 @@ namespace MoviesDatabase.DatabaseModel
         /// <summary>
         /// Обложка фильма\сериала.
         /// </summary>
-        [NotMapped] public byte[] Image { get; set; }
+        public string ImageUrl { get; set; }
 
         /// <summary>
         /// Список жанров этого видео.
