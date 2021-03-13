@@ -14,8 +14,8 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
     {
 
         private const string helpText =
-            "/start - Show main info page" +
-            "/enable \\ /disable - Enables or disables the bot" +
+            "/start - Show main info page\n" +
+            "/enable \\ /disable - Enables or disables the bot\n" +
             "/settings - show a settings page";
 
         public MainMenuBotStage([NotNull] ITelegramBotClient client) : base(client)
@@ -30,8 +30,6 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
                 .ThenInclude(x => x.MovieGenres)
                 .ThenInclude(x => x.Genre)
                 .Include(x => x.Settings)
-                .ThenInclude(x => x.Countries)
-                .ThenInclude(x => x.Country)
                 .SingleOrDefault(x => x.ApiIdentifier == userId);
             if (user == null)
             {
@@ -44,7 +42,7 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
             }
             if (message != null)
             {
-                InlineKeyboardMarkup inlineKeyboar = null;
+                InlineKeyboardMarkup inlineKeyboard = null;
                 switch (message)
                 {
                     case "/start":
@@ -62,7 +60,7 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
                             buttonValue = "/enable";
                         }
 
-                        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(new[]
+                        inlineKeyboard = new InlineKeyboardMarkup(new[]
                         {
                             new []
                             {
@@ -85,32 +83,25 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
                     case "/disable":
                         SetUserIsEnabledStatus(db, user, false);
                         break;
+                    case "/setvotesaverage":
+                        await botClient.SendTextMessageAsync(chatId: userId, text: "Ok, now enter votes average lower filter!");
+                        OnStageChangingNeeded(new SetVotesAverageBotStage(botClient));
+                        break;
+                    case "/setvotescount":
+                        await botClient.SendTextMessageAsync(chatId: userId, text: "Ok, now enter votes count lower filter!");
+                        OnStageChangingNeeded(new SetVotesCountBotStage(botClient));
+                        break;
                     case "/settings":
 
-                        VideoType videoType = user.Settings.FilteringVideoType;
-                        string videoTypeFilterValue = (int)videoType == 0
+                        VideoType? videoType = user.Settings.FilteringVideoType;
+                        string videoTypeFilterValue = !videoType.HasValue
                             ? "all"
                             : StaticFuncs.StaticFuncs.GetEnumDescription(videoType);
                         string genresFilterValue = !user.Settings.MovieGenres.Any()
                             ? "all"
                             : $" only {string.Join(", ", user.Settings.MovieGenres.Select(x => x.Genre.Name))}";
-                        string countriesFilterValue = !user.Settings.Countries.Any()
-                            ? "all"
-                            : $"only {string.Join(", ", user.Settings.Countries.Select(x => x.Country.Name))}";
                         inlineKeyboard = new InlineKeyboardMarkup(new[]
                         {
-                            new []
-                            {
-                                InlineKeyboardButton.WithCallbackData("Add country to the wishlist", "/addcountry"),
-                            },
-                            new[]
-                            {
-                                InlineKeyboardButton.WithCallbackData("Remove a country from the wishlist", "/removecountry"),
-                            },
-                            new[]
-                            {
-                                InlineKeyboardButton.WithCallbackData("Clear a countries wishlist", "/clearcountries"),
-                            },
                             new []
                             {
                                 InlineKeyboardButton.WithCallbackData("Add genre to the wishlist", "/addgenre"),
@@ -122,23 +113,24 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
                             new[]
                             {
                                 InlineKeyboardButton.WithCallbackData("Clear a genres wishlist", "/cleargenres"),
+                            },
+                            new[]
+                            {
+                                InlineKeyboardButton.WithCallbackData("Set lower filter to votes average", "/setvotesaverage"),
+                            },
+                            new[]
+                            {
+                                InlineKeyboardButton.WithCallbackData("Set lower filter to votes count", "/setvotescount"),
                             }
                         });
                         await botClient.SendTextMessageAsync(chatId: userId,
                             text: $"Ok, that's your settings:\n\n" +
                             $"Bot status: {(user.Settings.IsEnabled ? "enabled" : "disabled")}\n" +
                             $"Video types: {videoTypeFilterValue}\n" +
-                            $"Genres: {genresFilterValue}\n" +
-                            $"Countries: {countriesFilterValue}",
+                            $"Genres: {genresFilterValue}\n"+
+                            $"Votes count lower limit: {(user.Settings.VotesCount.HasValue && user.Settings.VotesCount!=0 ? user.Settings.VotesCount : "all")}\n"+
+                            $"Votes average lower limit: {(user.Settings.VotesAverage.HasValue && user.Settings.VotesAverage != 0 ? user.Settings.VotesAverage : "all")}",
                             replyMarkup: inlineKeyboard);
-                        break;
-                    case "/addcountry":
-                        await botClient.SendTextMessageAsync(chatId: userId, text: "Ok, now enter Name of the Country you want to add to your wishlist!");
-                        OnStageChangingNeeded(new AddCountryBotStage(botClient));
-                        break;
-                    case "/removecountry":
-                        await botClient.SendTextMessageAsync(chatId: userId, text: "Ok, now enter Name of the Country you want to remove from your wishlist!");
-                        OnStageChangingNeeded(new DeleteCountryStage(botClient));
                         break;
                     case "/addgenre":
                         await botClient.SendTextMessageAsync(chatId: userId, text: "Ok, now enter Name of the Genre you want to add to your wishlist!");
@@ -147,11 +139,6 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
                     case "/removegenre":
                         await botClient.SendTextMessageAsync(chatId: userId, text: "Ok, now enter Name of the Genre you want to remove from your wishlist!");
                         OnStageChangingNeeded(new DeleteGenreStage(botClient));
-                        break;
-                    case "/clearcountries":
-                        user.Settings.Countries.Clear();
-                        db.SaveChanges();
-                        await botClient.SendTextMessageAsync(chatId: userId, text: "Ok, you countries withlist is now empty!");
                         break;
                     case "/cleargenres":
                         user.Settings.MovieGenres.Clear();
@@ -168,16 +155,6 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
         public override async void OnCallbackQuery(long userId, string message)
         {
             OnMessage(userId, message);
-        }
-
-        public override async void OnInlineQuery(object sender, InlineQueryEventArgs e)
-        {
-            Console.WriteLine();
-        }
-
-        public override async void OnInlineResultChosen(object sender, ChosenInlineResultEventArgs e)
-        {
-            Console.WriteLine();
         }
 
 

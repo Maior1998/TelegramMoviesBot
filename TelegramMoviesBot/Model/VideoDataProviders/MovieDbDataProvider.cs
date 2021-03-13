@@ -38,15 +38,19 @@ namespace TelegramMoviesBot.Model.VideoDataProviders
             List<Video> videos = new List<Video>();
             string firstPage = GetUrl(url);
             MovieDbPageEntry movieDbPageEntry = JsonConvert.DeserializeObject<MovieDbPageEntry>(firstPage);
-            for (page = 1; page <= movieDbPageEntry.total_pages; page++)
+            int length = movieDbPageEntry.total_pages;
+#if DEBUG
+            length = 70;
+#endif
+            for (page = 1; page <= length; page++)
             {
-                Thread.Sleep(500);
-                Console.WriteLine($"Downloading page {page} from {movieDbPageEntry.total_pages}");
+                Thread.Sleep(100);
+                Console.WriteLine($"Downloading page {page} from {length}");
                 url = $"https://api.themoviedb.org/3/discover/movie?api_key={BotSettings.MovieDbApiKey}&language=ru-RU&sort_by=release_date.asc&include_adult=true&include_video=false&page={page}&release_date.gte={DateTime.Today:yyyy-MM-dd}";
                 movieDbPageEntry = JsonConvert.DeserializeObject<MovieDbPageEntry>(GetUrl(url));
                 videos.AddRange(movieDbPageEntry.results.Select(x => ConvertToVideo(x, VideoType.Movie)).Where(x => x.ReleaseDate.Date >= DateTime.Today));
             }
-            return videos.ToArray();
+            return videos.Where(x => !string.IsNullOrWhiteSpace(x.Description)).ToArray();
         }
 
         public class MovieDbGenresVideos
@@ -98,7 +102,9 @@ namespace TelegramMoviesBot.Model.VideoDataProviders
             Video result = new Video
             {
                 Name = source.title,
-                Description = source.overview
+                Description = source.overview,
+                VotesAverage = source.vote_average,
+                VotesCount = source.vote_count
             };
             DatabaseContext db = new DatabaseContext();
             foreach (int genreId in source.genre_ids)

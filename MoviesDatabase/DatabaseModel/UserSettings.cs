@@ -29,17 +29,19 @@ namespace MoviesDatabase.DatabaseModel
         /// Список жанров, которые предпочитает данный пользователь.
         /// </summary>
         public List<SettingGenre> MovieGenres { get; set; } = new List<SettingGenre>();
-
-
-
         /// <summary>
-        /// Список предпочитаемых стран выхода фильмов\сериалов пользователя.
+        /// Нижняя граница числа голосов рейтинга видео.
         /// </summary>
-        public List<SettingCountry> Countries { get; set; } = new List<SettingCountry>();
+        public int? VotesCount { get; set; }
+        /// <summary>
+        /// Нижняя граница рейтинга видео.
+        /// </summary>
+        public float? VotesAverage { get; set; }
+
         /// <summary>
         /// Предпочитаемый список типов выходящего видео.
         /// </summary>
-        public VideoType FilteringVideoType { get; set; }
+        public VideoType? FilteringVideoType { get; set; }
 
 
     }

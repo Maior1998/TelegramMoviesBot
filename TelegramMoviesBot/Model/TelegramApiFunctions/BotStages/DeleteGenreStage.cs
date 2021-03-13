@@ -14,17 +14,6 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
         public DeleteGenreStage([NotNull] ITelegramBotClient client) : base(client)
         {
         }
-        
-
-        public override void OnInlineQuery(object sender, InlineQueryEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void OnInlineResultChosen(object sender, ChosenInlineResultEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
 
         protected override async void OnGenreFound(DatabaseContext db, long userId, Genre genre)
         {

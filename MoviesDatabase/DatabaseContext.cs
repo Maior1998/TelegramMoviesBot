@@ -43,7 +43,6 @@ namespace MoviesDatabase
         public virtual DbSet<UserSettings> UsersSettings { get; set; }
         public virtual DbSet<Video> Videos { get; set; }
         public virtual DbSet<Genre> Genres { get; set; }
-        public virtual DbSet<Country> Countries { get; set; }
 
 
 
@@ -75,31 +74,6 @@ namespace MoviesDatabase
                 .HasOne(x => x.Settings)
                 .WithMany(x => x.MovieGenres)
                 .HasForeignKey(x => x.SettingsId);
-
-            //Settings - = > SettingCountry < = - Country
-            modelBuilder.Entity<SettingCountry>()
-                .HasKey(x => new { x.CountryId, x.SettingsId });
-            modelBuilder.Entity<SettingCountry>()
-                .HasOne(x => x.Country)
-                .WithMany(x => x.Settings)
-                .HasForeignKey(x => x.CountryId);
-            modelBuilder.Entity<SettingCountry>()
-                .HasOne(x => x.Settings)
-                .WithMany(x => x.Countries)
-                .HasForeignKey(x => x.SettingsId);
-
-
-            //Video - = > VideoCountry < = - Country
-            modelBuilder.Entity<VideoCountry>()
-                .HasKey(x => new { x.CountryId, x.VideoId });
-            modelBuilder.Entity<VideoCountry>()
-                .HasOne(x => x.Country)
-                .WithMany(x => x.Videos)
-                .HasForeignKey(x => x.CountryId);
-            modelBuilder.Entity<VideoCountry>()
-                .HasOne(x => x.Video)
-                .WithMany(x => x.Countries)
-                .HasForeignKey(x => x.VideoId);
 
 
             //Video - = > VideoGenre < = - Genre

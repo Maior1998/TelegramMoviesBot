@@ -23,8 +23,6 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions
             if(CurrentStage != null)
             {
                 botClient.OnMessage -= CurrentStage.OnMessage;
-                botClient.OnInlineResultChosen -= CurrentStage.OnInlineResultChosen;
-                botClient.OnInlineQuery -= CurrentStage.OnInlineQuery;
                 botClient.OnCallbackQuery -= CurrentStage.OnCallbackQuery;
                 CurrentStage.StageChangingNeeded -= ChangeStage;
             }
@@ -32,8 +30,6 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions
             CurrentStage = newStage;
 
             botClient.OnMessage += CurrentStage.OnMessage;
-            botClient.OnInlineResultChosen += CurrentStage.OnInlineResultChosen;
-            botClient.OnInlineQuery += CurrentStage.OnInlineQuery;
             botClient.OnCallbackQuery += CurrentStage.OnCallbackQuery;
             CurrentStage.StageChangingNeeded += ChangeStage;
         }
@@ -52,7 +48,11 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions
 
         public static void SendMessage(User user, Video video)
         {
-            string message = $"<b>Caption</b>: {video.Name}\n<b>Description</b>: {video.Description}\nRelease Date : {video.ReleaseDate.ToShortDateString()}";
+            string message = $"<b>Caption</b>: {video.Name}\n" +
+                $"<b>Description</b>: {video.Description}\n" +
+                $"Release Date : {video.ReleaseDate.ToShortDateString()}\n" +
+                $"Votes count: {video.VotesCount}\n" +
+                $"Votes average: {video.VotesAverage}";
             if (string.IsNullOrWhiteSpace(video.ImageUrl))
                 botClient.SendTextMessageAsync(chatId: user.ApiIdentifier, text: message, parseMode: ParseMode.Html);
             else

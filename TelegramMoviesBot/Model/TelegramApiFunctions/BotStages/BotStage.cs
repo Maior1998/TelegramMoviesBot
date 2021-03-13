@@ -32,8 +32,6 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
         }
 
         public abstract void OnCallbackQuery(long userId, string message);
-        public abstract void OnInlineQuery(object sender, InlineQueryEventArgs e);
-        public abstract void OnInlineResultChosen(object sender, ChosenInlineResultEventArgs e);
         public abstract void OnMessage(long userId, string message);
 
     }

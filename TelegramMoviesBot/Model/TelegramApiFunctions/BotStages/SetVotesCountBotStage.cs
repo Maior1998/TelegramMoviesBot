@@ -4,22 +4,22 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using MoviesDatabase;
 using MoviesDatabase.DatabaseModel;
-using MoviesDatabase.DatabaseModel.ManyToManyTables;
 using Telegram.Bot;
-using Telegram.Bot.Args;
 
 namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
 {
-    public abstract class SelectCountryStage : BotStage
+    public class SetVotesCountBotStage : BotStage
     {
-        private const string PleaseEnterText = "Please enter name of the country or use /cancel command";
-        public SelectCountryStage([NotNull] ITelegramBotClient client) : base(client)
+        private const string PleaseEnterText = "Please enter a number of a video votes count or use /cancel command";
+        public SetVotesCountBotStage([NotNull] ITelegramBotClient client) : base(client)
         {
         }
+
         public override void OnCallbackQuery(long userId, string message)
         {
             OnMessage(userId, message);
         }
+
         public override async void OnMessage(long userId, string message)
         {
             if (message.StartsWith("/"))
@@ -39,22 +39,22 @@ namespace TelegramMoviesBot.Model.TelegramApiFunctions.BotStages
             {
                 DatabaseContext db = new DatabaseContext();
 
-                Country[] countries = db.Countries.Where(x => x.Name.ToLower() == message.ToLower()).ToArray();
-                if (!countries.Any())
+                if (!int.TryParse(message, out int parsedVotesAverage))
                 {
-                    await botClient.SendTextMessageAsync(chatId: userId, text: $"Sorry, i can't find a country with that name. {PleaseEnterText}");
+                    await botClient.SendTextMessageAsync(chatId: userId, text: $"Can't recognize number \"{message}\"! {PleaseEnterText}");
                     return;
                 }
-                if (countries.Length > 1)
-                {
-                    await botClient.SendTextMessageAsync(chatId: userId, text: $"Ambigous name! Possible variants is:\n{string.Join(", ", countries.Select(x => x.Name).OrderBy(x => x))}\n\n{PleaseEnterText}");
-                    return;
-                }
-                Country country = countries[0];
-                OnCountryFound(db, userId, country);
+
+                User user = db.Users.Include(x => x.Settings).Single(x => x.ApiIdentifier == userId);
+                if (parsedVotesAverage == 0)
+                    user.Settings.VotesCount = null;
+                else
+                    user.Settings.VotesCount = parsedVotesAverage;
+                db.SaveChanges();
+                await botClient.SendTextMessageAsync(chatId: userId, text: $"Now your votes count lower border is {message}!");
+                OnStageChangingNeeded(new MainMenuBotStage(botClient));
+
             }
         }
-            protected abstract void OnCountryFound(DatabaseContext db, long userId, Country country);
-  
     }
 }

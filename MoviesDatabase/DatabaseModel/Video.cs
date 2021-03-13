@@ -35,10 +35,6 @@ namespace MoviesDatabase.DatabaseModel
         /// Тип видео.
         /// </summary>
         public VideoType Type { get; set; }
-        /// <summary>
-        /// Список стран выхода этого видео.
-        /// </summary>
-        public List<VideoCountry> Countries { get; set; } = new List<VideoCountry>();
 
         /// <summary>
         /// Ссылка на трейлер к этому видео.
@@ -54,5 +50,15 @@ namespace MoviesDatabase.DatabaseModel
         /// Список жанров этого видео.
         /// </summary>
         public List<VideoGenre> Genres { get; set; } = new List<VideoGenre>();
+
+        /// <summary>
+        /// Число голосов рейтинга этого видео.
+        /// </summary>
+        public int VotesCount { get; set; }
+
+        /// <summary>
+        /// Средний рейтинг пользовательских голосов этого видео.
+        /// </summary>
+        public float VotesAverage { get; set; }
     }
 }
