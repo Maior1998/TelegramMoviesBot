@@ -15,8 +15,8 @@ namespace TelegramMoviesBot
 
 
         private static string telegramApiKey;
-        public static string TelegramApiKey => telegramApiKey ??= Environment.GetEnvironmentVariable("MY_PP", EnvironmentVariableTarget.Machine);
+        public static string TelegramApiKey => telegramApiKey ??= Environment.GetEnvironmentVariable("MY_PP");
         private static string movieDbApiKey;
-        public static string MovieDbApiKey => movieDbApiKey ??= Environment.GetEnvironmentVariable("TMDB_API_KEY", EnvironmentVariableTarget.Machine);
+        public static string MovieDbApiKey => movieDbApiKey ??= Environment.GetEnvironmentVariable("TMDB_API_KEY");
     }
 }
