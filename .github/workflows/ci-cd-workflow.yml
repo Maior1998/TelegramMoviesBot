@@ -31,8 +31,7 @@ jobs:
          envs: MY_HOME_ADDRESS,MY_PP,TMDB_API_KEY
          script: |
             rm Dockerfile
-            echo "$MY_HOME_ADDRESS" > DockerfileURL_file
-            cat DockerfileURL_file
+            echo "$MY_PP" > env_file
             wget $MY_HOME_ADDRESS
             docker kill TelegramMoviesBot
             docker image rm maior1998:TelegramMoviesBot
