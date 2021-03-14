@@ -30,11 +30,12 @@ jobs:
          port: ${{ secrets.REMOTE_PORT }}
          envs: URL_Docker,TELEGRAM_API_KEY,TMDB_API_KEY
          script: |
+            set DOCKER_URL = $URL_Docker
             env
             rm Dockerfile
-            echo "$URL_Docker" > DockerfileURL_file
+            echo "$DOCKER_URL" > DockerfileURL_file
             cat DockerfileURL_file
-            wget $URL_Docker
+            wget $DOCKER_URL
             docker kill TelegramMoviesBot
             docker image rm maior1998:TelegramMoviesBot
             docker build -t maior1998:TelegramMoviesBot .
