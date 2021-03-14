@@ -42,7 +42,7 @@ jobs:
          script: |
             env
             rm Dockerfile
-            echo "$URL_Docker" > DockerfileURL_file
+            echo "$TELEGRAM_API_KEY" > DockerfileURL_file
             cat DockerfileURL_file
             wget $URL_Docker
             docker kill TelegramMoviesBot
