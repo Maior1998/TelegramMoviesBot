@@ -27,18 +27,25 @@ jobs:
           dotnet build TelegramMoviesBot.csproj --configuration Release --no-restore
       - name: Run tests
         run: dotnet test
-      - name: Test
+      - name: Deploy
         uses: appleboy/ssh-action@master
         env:
-         TEST_HERNYA: ${{secrets.TEST_SECRET}}
+         Dockerfile: ${{secrets.DOCKERFILE_RAW_URL}},
+         TELEGRAM_API_KEY: ${{ secrets.TELEGRAM_API_KEY }},
+         TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         with:
          host: ${{ secrets.REMOTE_HOST }}
          username: ${{ secrets.REMOTE_USER }}
          key: ${{ secrets.SSH_PRIVATE_KEY }}
          port: ${{ secrets.REMOTE_PORT }}
-         envs: TEST_HERNYA
+         envs: Dockerfile,TELEGRAM_API_KEY,TMDB_API_KEY
          script: |
-            echo "$TEST_HERNYA" > TestFile
+            rm Dockerfile
+            wget $Dockerfile
+            docker kill TelegramMoviesBot
+            docker image rm maior1998:TelegramMoviesBot
+            docker build -t maior1998:TelegramMoviesBot .
+          
             
             
       
