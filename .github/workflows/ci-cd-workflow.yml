@@ -30,7 +30,7 @@ jobs:
       - name: Run tests
         run: dotnet test
       - name: try to connect by ssh 
-        run: ssh root@sergey-pat.ru
+        run: ssh -T root@sergey-pat.ru ls
       #- name: Build and publish docker image 
       #  run: |
       #      dotnet run /TelegramMoviesBot/TelegramMoviesBot.csproj
