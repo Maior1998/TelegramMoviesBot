@@ -34,6 +34,7 @@ jobs:
             wget $MY_HOME_ADDRESS
             docker kill TelegramMoviesBot
             docker image rm maior1998:TelegramMoviesBot
+            echo ""
             docker build --build-arg TELEGRAM_API=$TELEGRAM_API --build-arg TMDB_API_KEY=$TMDB_API_KEY -t maior1998:TelegramMoviesBot .
           
             
