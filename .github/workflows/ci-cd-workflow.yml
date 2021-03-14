@@ -32,10 +32,9 @@ jobs:
          script: |
             rm Dockerfile
             wget $MY_HOME_ADDRESS
-            docker kill TelegramMoviesBot
-            docker image rm maior1998:TelegramMoviesBot
-            echo ""
-            docker build --build-arg TELEGRAM_API=$TELEGRAM_API --build-arg TMDB_API_KEY=$TMDB_API_KEY -t TelegramMoviesBot .
+            docker kill telegram_movies_bot
+            docker image rm telegram_movies_bot
+            docker build --build-arg TELEGRAM_API=$TELEGRAM_API --build-arg TMDB_API_KEY=$TMDB_API_KEY -t telegram_movies_bot .
             docker run 
           
             
