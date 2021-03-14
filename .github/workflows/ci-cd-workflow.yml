@@ -30,8 +30,8 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@master
         env:
-         Dockerfile: ${{secrets.DOCKERFILE_RAW_URL}},
-         TELEGRAM_API_KEY: ${{ secrets.TELEGRAM_API_KEY }},
+         Dockerfile: ${{ secrets.DOCKERFILE_RAW_URL }}
+         TELEGRAM_API_KEY: ${{ secrets.TELEGRAM_API_KEY }}
          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         with:
          host: ${{ secrets.REMOTE_HOST }}
