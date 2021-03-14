@@ -17,20 +17,10 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: |
-          cd TelegramMoviesBot
-          dotnet restore TelegramMoviesBot.csproj
-      - name: build project
-        run: |
-          cd TelegramMoviesBot
-          dotnet build TelegramMoviesBot.csproj --configuration Release --no-restore
-      - name: Run tests
-        run: dotnet test
       - name: Deploy
         uses: appleboy/ssh-action@master
         env:
-         URL_Docker: ${{ secrets.DOCKERFILE_RAW_URL }}
+         URL_Docker: ${{ secrets.DOCKER_DOWNLOAD }}
          TELEGRAM_API_KEY: ${{ secrets.TELEGRAM_API_KEY }}
          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         with:
@@ -42,7 +32,7 @@ jobs:
          script: |
             env
             rm Dockerfile
-            echo "$TELEGRAM_API_KEY" > DockerfileURL_file
+            echo "$URL_Docker" > DockerfileURL_file
             cat DockerfileURL_file
             wget $URL_Docker
             docker kill TelegramMoviesBot
