@@ -44,7 +44,7 @@ jobs:
             rm Dockerfile
             echo "$DockerfileURL" > DockerfileURL_file
             cat DockerfileURL_file
-            wget "$DockerfileURL"
+            wget $DockerfileURL
             docker kill TelegramMoviesBot
             docker image rm maior1998:TelegramMoviesBot
             docker build -t maior1998:TelegramMoviesBot .
