@@ -31,14 +31,12 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
          Dockerfile: ${{ secrets.DOCKERFILE_RAW_URL }}
-         TELEGRAM_API_KEY: ${{ secrets.TELEGRAM_API_KEY }}
-         TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         with:
          host: ${{ secrets.REMOTE_HOST }}
          username: ${{ secrets.REMOTE_USER }}
          key: ${{ secrets.SSH_PRIVATE_KEY }}
          port: ${{ secrets.REMOTE_PORT }}
-         envs: Dockerfile,TELEGRAM_API_KEY,TMDB_API_KEY
+         envs: Dockerfile
          script: |
             env
             rm Dockerfile
