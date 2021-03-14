@@ -27,7 +27,7 @@ jobs:
           dotnet build TelegramMoviesBot.csproj --configuration Release --no-restore
       - name: Run tests
         run: dotnet test
-      - name: multiple command
+      - name: Test
         uses: appleboy/ssh-action@master
         env:
          TEST_HERNYA: ${{secrets.TEST_SECRET}}
@@ -38,6 +38,7 @@ jobs:
          port: ${{ secrets.REMOTE_PORT }}
          envs: TEST_HERNYA
          script: |
-            echo "$TEST_HERNYA"
+            echo "$TEST_HERNYA" > TestFile
+            
             
       
