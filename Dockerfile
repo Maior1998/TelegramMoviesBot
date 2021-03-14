@@ -5,4 +5,4 @@ RUN git clone --branch test-branch https://github.com/Maior1998/TelegramMoviesBo
         && cd TelegramMoviesBot/TelegramMoviesBot \
         && dotnet restore TelegramMoviesBot.csproj \
         && dotnet build TelegramMoviesBot.csproj --configuration Release --no-restore \
-        && dotnet run TelegramMoviesBot.csproj
+        && dotnet run TelegramMoviesBot.csproj -c Release
