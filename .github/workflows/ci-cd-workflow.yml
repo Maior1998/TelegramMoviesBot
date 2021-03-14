@@ -20,7 +20,7 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@master
         env:
-         URL_Docker: ${{ secrets.DOCKER_DOWNLOAD }}
+         MY_HOME_ADDRESS: ${{ secrets.DOCKER_DOWNLOAD }}
          TELEGRAM_API_KEY: ${{ secrets.TELEGRAM_API_KEY }}
          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         with:
@@ -28,13 +28,12 @@ jobs:
          username: ${{ secrets.REMOTE_USER }}
          key: ${{ secrets.SSH_PRIVATE_KEY }}
          port: ${{ secrets.REMOTE_PORT }}
-         envs: URL_Docker,TELEGRAM_API_KEY,TMDB_API_KEY
+         envs: MY_HOME_ADDRESS,TELEGRAM_API_KEY,TMDB_API_KEY
          script: |
-            env
             rm Dockerfile
-            echo "$URL_Docker" > DockerfileURL_file
+            echo "$MY_HOME_ADDRESS" > DockerfileURL_file
             cat DockerfileURL_file
-            wget $URL_Docker
+            wget $MY_HOME_ADDRESS
             docker kill TelegramMoviesBot
             docker image rm maior1998:TelegramMoviesBot
             docker build -t maior1998:TelegramMoviesBot .
