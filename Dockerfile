@@ -9,4 +9,4 @@ RUN echo #!/bin/sh > /root/init.sh \
         && echo /usr/bin/dotnet run /TelegramMoviesBot/TelegramMoviesBot/TelegramMoviesBot.csproj -c Release >> /root/init.sh \
         && chmod +x /root/init.sh
 WORKDIR /TelegramMoviesBot/TelegramMoviesBot/
-ENTRYPOINT  ["/root/init.sh"]
+CMD  /root/init.sh
