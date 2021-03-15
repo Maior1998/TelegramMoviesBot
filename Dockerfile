@@ -7,4 +7,4 @@ RUN git clone --branch test-branch https://github.com/Maior1998/TelegramMoviesBo
         && dotnet build TelegramMoviesBot.csproj --configuration Release
 WORKDIR /TelegramMoviesBot/TelegramMoviesBot/
 ENTRYPOINT  /usr/bin/dotnet
-RUN [ "run /TelegramMoviesBot/TelegramMoviesBot/TelegramMoviesBot.csproj -c Release" ]
+CMD [ "run /TelegramMoviesBot/TelegramMoviesBot/TelegramMoviesBot.csproj -c Release" ]
