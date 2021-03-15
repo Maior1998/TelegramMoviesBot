@@ -35,4 +35,4 @@ jobs:
             docker kill telegram_movies_bot_container
             docker image rm telegram_movies_bot
             docker build --build-arg TELEGRAM_API=$TELEGRAM_API --build-arg TMDB_API_KEY=$TMDB_API_KEY -t telegram_movies_bot .
-            docker run -d telegram_movies_bot
+            docker run -d -e TELEGRAM_API=$TELEGRAM_API -e TMDB_API_KEY=$TMDB_API_KEY telegram_movies_bot
