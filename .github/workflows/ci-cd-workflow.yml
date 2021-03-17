@@ -5,7 +5,7 @@ name: Test-Workflow
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: test-branch
+    branches: master
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -17,6 +17,16 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          cd TelegramMoviesBot
+          dotnet restore TelegramMoviesBot.csproj
+      - name: build project
+        run: |
+          cd TelegramMoviesBot
+          dotnet build TelegramMoviesBot.csproj --configuration Release --no-restore
+      - name: Run tests
+        run: dotnet test
       - name: Deploy
         uses: appleboy/ssh-action@master
         env:
