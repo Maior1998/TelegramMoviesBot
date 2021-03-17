@@ -17,21 +17,6 @@ namespace Tests.Model
                 new Video()
                 {
                     Type=VideoType.Movie,
-                    Countries = new List<VideoCountry>()
-                    {
-                        new VideoCountry()
-                        {
-                            CountryId=1
-                        },
-                        new VideoCountry()
-                        {
-                            CountryId=4
-                        }
-                        ,new VideoCountry()
-                        {
-                            CountryId=10
-                        }
-                    },
                     Genres = new List<VideoGenre>()
                     {
                         new VideoGenre()
