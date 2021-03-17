@@ -5,8 +5,8 @@ RUN apt-get update && apt-get upgrade -y
 RUN git clone --branch test-branch https://github.com/Maior1998/TelegramMoviesBot.git \
         && cd TelegramMoviesBot/TelegramMoviesBot \
         && dotnet build TelegramMoviesBot.csproj --configuration Release
-RUN echo #!/bin/sh > /root/init.sh \
-        && echo /usr/bin/dotnet run /TelegramMoviesBot/TelegramMoviesBot/TelegramMoviesBot.csproj -c Release >> /root/init.sh \
-        && chmod +x /root/init.sh
+RUN echo #!/bin/sh > ./init.sh \
+        && echo /usr/bin/dotnet run /TelegramMoviesBot/TelegramMoviesBot/TelegramMoviesBot.csproj -c Release >> ./init.sh \
+        && chmod +x ./init.sh
 WORKDIR /TelegramMoviesBot/TelegramMoviesBot/
-CMD  /root/init.sh
+CMD  ./init.sh 
