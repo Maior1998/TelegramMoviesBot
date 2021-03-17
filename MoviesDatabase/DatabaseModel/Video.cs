@@ -9,7 +9,7 @@ namespace MoviesDatabase.DatabaseModel
     /// <summary>
     /// Представляет собой видео, будь то фильм или сериал.
     /// </summary>
-    [Table("Viedos")]
+    [Table("Videos")]
     public class Video
     {
         /// <summary>
@@ -21,21 +21,44 @@ namespace MoviesDatabase.DatabaseModel
         /// Заглавие видео.
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Описание к видео.
+        /// </summary>
+        public string Description { get; set; }
+
         /// <summary>
         /// Дата выхода видео.
         /// </summary>
-        public DateTime RealeseDate { get; set; }
+        public DateTime ReleaseDate { get; set; }
         /// <summary>
         /// Тип видео.
         /// </summary>
         public VideoType Type { get; set; }
+
         /// <summary>
-        /// Список стран, в которых это видео выйдет\вышло.
+        /// Ссылка на трейлер к этому видео.
         /// </summary>
-        public List<VideoCountry> RealisedInCountries { get; set; } = new List<VideoCountry>();
+        public string TrailerUrl { get; set; }
+
+        /// <summary>
+        /// Обложка фильма\сериала.
+        /// </summary>
+        public string ImageUrl { get; set; }
+
         /// <summary>
         /// Список жанров этого видео.
         /// </summary>
         public List<VideoGenre> Genres { get; set; } = new List<VideoGenre>();
+
+        /// <summary>
+        /// Число голосов рейтинга этого видео.
+        /// </summary>
+        public int VotesCount { get; set; }
+
+        /// <summary>
+        /// Средний рейтинг пользовательских голосов этого видео.
+        /// </summary>
+        public float VotesAverage { get; set; }
     }
 }

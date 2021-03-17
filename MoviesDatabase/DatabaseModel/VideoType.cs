@@ -9,10 +9,10 @@ namespace MoviesDatabase.DatabaseModel
         /// <summary>
         /// Фильм.
         /// </summary>
-        Movie,
+        Movie=1,
         /// <summary>
         /// Сериал.
         /// </summary>
-        TvSeries
+        TvSeries=2
     }
 }

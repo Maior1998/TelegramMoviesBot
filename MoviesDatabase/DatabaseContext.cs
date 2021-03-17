@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.IO;
+using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MoviesDatabase.DatabaseModel;
 using MoviesDatabase.DatabaseModel.ManyToManyTables;
 
@@ -6,13 +10,49 @@ namespace MoviesDatabase
 {
     public class DatabaseContext : DbContext
     {
+        public readonly ILoggerFactory MyLoggerFactory;
+        public DatabaseContext() : base()
+        {
+            MyLoggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddDebug();
+            });
+        }
+        private static readonly string SettingsFileName = $"{nameof(SqlLiteSettings)}.json";
+        private static void TryLoadSettings()
+        {
+            string settingsFileContent = File.ReadAllText(SettingsFileName);
+            
+        }
+
+        private static void SaveSettings()
+        {
+
+        }
+
+        public static SqlLiteSettings Settings { get; set; } = new SqlLiteSettings()
+        {
+            SettingsFilePath = "tgmovies.sqlite"
+        };
+
+
+
+
 
         public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<UserSettings> UsersSerttins { get; set; }
-        
+        public virtual DbSet<UserSettings> UsersSettings { get; set; }
+        public virtual DbSet<Video> Videos { get; set; }
+        public virtual DbSet<Genre> Genres { get; set; }
+
+
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Filename=./tgmovies.sqlite");
+            optionsBuilder
+                .UseSqlite($"Filename={Settings.SettingsFilePath}")
+                .UseLoggerFactory(MyLoggerFactory)
+                .EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,37 +68,12 @@ namespace MoviesDatabase
                 .HasKey(x => new { x.GenreId, x.SettingsId });
             modelBuilder.Entity<SettingGenre>()
                 .HasOne(x => x.Genre)
-                .WithMany(x => x.SettingsGenres)
+                .WithMany(x => x.Settings)
                 .HasForeignKey(x => x.GenreId);
             modelBuilder.Entity<SettingGenre>()
                 .HasOne(x => x.Settings)
-                .WithMany(x => x.Genres)
+                .WithMany(x => x.MovieGenres)
                 .HasForeignKey(x => x.SettingsId);
-
-            //Settings - = > SettingCountry < = - Country
-            modelBuilder.Entity<SettingCountry>()
-                .HasKey(x => new { x.CountryId, x.SettingsId });
-            modelBuilder.Entity<SettingCountry>()
-                .HasOne(x => x.Country)
-                .WithMany(x => x.UserSettings)
-                .HasForeignKey(x => x.CountryId);
-            modelBuilder.Entity<SettingCountry>()
-                .HasOne(x => x.Settings)
-                .WithMany(x => x.Countries)
-                .HasForeignKey(x => x.SettingsId);
-
-
-            //Video - = > VideoCountry < = - Country
-            modelBuilder.Entity<VideoCountry>()
-                .HasKey(x => new { x.CountryId, x.VideoId });
-            modelBuilder.Entity<VideoCountry>()
-                .HasOne(x => x.Country)
-                .WithMany(x => x.Videos)
-                .HasForeignKey(x => x.CountryId);
-            modelBuilder.Entity<VideoCountry>()
-                .HasOne(x => x.Video)
-                .WithMany(x => x.RealisedInCountries)
-                .HasForeignKey(x => x.VideoId);
 
 
             //Video - = > VideoGenre < = - Genre

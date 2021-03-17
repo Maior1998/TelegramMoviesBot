@@ -24,11 +24,24 @@ namespace MoviesDatabase.DatabaseModel
         /// <summary>
         /// Определяет, включен ли бот у данного пользователя.
         /// </summary>
-        public bool IsEnabled { get; set; }
+        public bool IsEnabled { get; set; } = false;
+        /// <summary>
+        /// Список жанров, которые предпочитает данный пользователь.
+        /// </summary>
+        public List<SettingGenre> MovieGenres { get; set; } = new List<SettingGenre>();
+        /// <summary>
+        /// Нижняя граница числа голосов рейтинга видео.
+        /// </summary>
+        public int? VotesCount { get; set; }
+        /// <summary>
+        /// Нижняя граница рейтинга видео.
+        /// </summary>
+        public float? VotesAverage { get; set; }
 
-        public List<SettingGenre> Genres { get; set; }
-        public List<SettingCountry> Countries { get; set; }
-        public VideoType FilteringVideoType { get; set; }
+        /// <summary>
+        /// Предпочитаемый список типов выходящего видео.
+        /// </summary>
+        public VideoType? FilteringVideoType { get; set; }
 
 
     }
