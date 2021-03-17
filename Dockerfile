@@ -5,4 +5,5 @@ RUN apt-get update && apt-get upgrade -y
 RUN git clone --branch test-branch https://github.com/Maior1998/TelegramMoviesBot.git \
         && cd TelegramMoviesBot/TelegramMoviesBot \
         && dotnet build TelegramMoviesBot.csproj --configuration Release
-ENTRYPOINT dotnet run /TelegramMoviesBot/TelegramMoviesBot/TelegramMoviesBot.csproj -c Release
+ENTRYPOINT dotnet
+CMD run /TelegramMoviesBot/TelegramMoviesBot/TelegramMoviesBot.csproj -c Release
